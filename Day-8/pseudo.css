@@ -1,0 +1,56 @@
+/*
+link  ---> anchor tag
+active ----> anchor tag
+visited  ----> anchor tag
+firstchild
+lastchild
+nth-child()
+hover
+first-of-type
+last-of-type
+nth-of-type()
+*/
+a:link{
+    color:orange;
+}
+a:visited{
+    color: aqua;
+}
+a:active{
+    color:brown;
+}
+#btn:active{
+    color: aquamarine;
+}
+#btn:hover{
+    background-color: blueviolet;
+}
+
+
+ul>li:first-child{
+    background-color: lightgreen;
+}
+ul li:last-child{
+background-color: aqua;
+}
+
+/* //use of Function in css */
+ul li:nth-child(3){
+    background-color: blueviolet;
+}
+
+
+
+section article:last-of-type{
+    background-color: brown;
+}
+
+section div:last-of-type{
+    background-color: chocolate;
+}
+section div:nth-of-type(2){
+    background-color: darkcyan;
+}
+section div:first-of-type{
+    background-color: darkmagenta;
+}                                                                           

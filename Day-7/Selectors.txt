@@ -1,0 +1,6 @@
+1 simple selectors  {id{#},class{.},element{tag name},universal{*},group{,}
+2 combinators = {1.descendent empty space ,2.child >,3.adjacent sibling +, 4. general siblings ~
+
+3 pseudo class
+4 pseudo elements
+5 attribute selectors

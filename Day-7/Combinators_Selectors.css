@@ -1,0 +1,16 @@
+/* descendent direct as well as indirect child */
+section div{
+    background-color: red;
+}
+/* child : direct child */
+section>div{
+    background-color: pink;
+}
+/* general: after section closing tag all the division are general siblings */
+section ~div{
+    background-color: green;
+}
+/* adjacent : next element after closing of section is adjacent siblings*/
+section +div{
+    background-color: blueviolet;
+}

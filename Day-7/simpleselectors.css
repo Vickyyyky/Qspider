@@ -1,0 +1,30 @@
+
+
+/* simple selectors */
+
+*{
+    height: auto;
+    width: auto;
+    background-color: aquamarine;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+#heading{
+    background-color: red;
+}
+.pp{
+    background-color: brown;
+}
+.p{
+    color: blue;
+}
+div{
+    background-color: blueviolet;
+}
+/* p,span,section{
+    background-color: palevioletred;
+
+} */
+
+#para,.content,section{
+    background-color: greenyellow;
+} 

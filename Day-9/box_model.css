@@ -1,0 +1,28 @@
+*{
+    box-sizing: border-box;
+}
+
+    div{
+    height: 200px;
+    width: 200px;
+    border: 10px solid black;
+    /* size of border,style of border,color */
+
+    padding: 50px;
+}
+section{
+    height: 200px;
+    width: 200px;
+    border: 10px solid black;
+    /* size of border,style of border,color */
+
+    padding: 50px;
+    box-sizing: border-box;
+    /* margin: 100px; */
+    margin: 100px 80px 40px 50px;
+    /* trbl */
+    /* t l/r b
+    t/b l/r */
+
+    /* we cannot give negative value in padding only give negative value in margin */
+}

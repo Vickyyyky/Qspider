@@ -1,0 +1,37 @@
+/*
+::first-line
+::first-letter
+::after
+::before
+::selection
+::marker
+*/
+p::first-line{
+    color: cornflowerblue;
+}
+p::first-letter{
+    font-size: xx-large;
+    color: brown;
+}
+p::selection{
+    background-color: crimson;
+    color: burlywood;
+}
+h1::before{
+    content: "😍";
+    font-size: 50px;
+}
+h1::after{
+    content:"😎";
+    font-size: 20px;
+}
+/* ul>li::marker{
+    color: darkmagenta;
+}
+ol>li::marker{
+    color: deeppink;
+} */
+
+::marker{
+    color: crimson;
+}
