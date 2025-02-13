@@ -1,0 +1,48 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+#container1{
+    height: 500px;
+    width: 500px;
+    background-color: chocolate;
+}
+
+#container2{
+    height:50vh;
+    width: 100vw;
+    background-color: crimson;
+}
+
+
+#container3{
+  height: 50vh;
+  width:80vw;
+background-color: deeppink;
+}
+
+#container3>article{
+    height: 50%;
+    width: 50%;
+  background-color: rgb(48, 56, 49);
+  }
+
+#container4{
+    height:1em;
+    width:1em;
+    background-color: rgb(121, 95, 121);
+    font-size: 100;
+}
+
+html{
+    font-size: 100px;
+}
+
+#container5{
+    height: 1rem;
+    width: 1rem;
+    background-color: darkred;
+}
+

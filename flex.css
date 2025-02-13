@@ -1,0 +1,23 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+section{
+    height:90vh;
+    width: 90vw;
+    background-color: maroon;
+    display: flex;
+    flex-direction: row;  
+    justify-content: space-between;
+    align-items: center;                    
+}
+
+section>div{
+    height: 150px;
+    width: 150px;
+    background-color: rgb(70, 95, 86);
+    border: 1px solid rgb(54, 97, 103);
+    color: azure;
+}
