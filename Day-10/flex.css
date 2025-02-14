@@ -10,8 +10,12 @@ section{
     background-color: maroon;
     display: flex;
     flex-direction: row;  
-    justify-content: space-between;
-    align-items: center;                    
+    justify-content:center;
+    gap: 50px;
+    align-items: center;   
+    
+    flex-wrap: wrap;
+    overflow:scroll
 }
 
 section>div{

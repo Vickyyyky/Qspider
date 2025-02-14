@@ -1,0 +1,40 @@
+*{
+  margin: 0;
+  padding: 0;
+    box-sizing: border-box;
+}
+nav{
+    height: 70px;
+    width: 100%;
+    background-color: darkred;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px;
+}
+
+nav figure{
+    /* background-color: deepskyblue; */
+    color: white;
+    display: flex;
+    align-items: center;
+
+}
+nav ul{
+    /* background-color: darkgrey; */
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    list-style: none;
+}
+nav li{
+    /* border: 1px solid black; */
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+
+}
+nav li:hover{
+    background-color: whitesmoke;
+    color: black;
+    cursor: pointer;
+}
