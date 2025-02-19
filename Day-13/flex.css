@@ -22,7 +22,7 @@ body{
     flex-flow:row wrap ;
     gap:10px 20px;
     justify-content: space-evenly;
-    align-items:flex-end ;
+    align-items:center ;
 }
 
 
