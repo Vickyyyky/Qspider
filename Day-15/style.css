@@ -1,0 +1,101 @@
+*,*::after*::before{
+    box-sizing: border-box;
+}
+*{
+    margin: 0;
+    padding: 0;
+    
+    text-decoration: none;
+    list-style-type: none;
+    
+}
+
+body{
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(29, 2, 2);
+    
+}
+
+#top{
+    width:100%;
+    height: 70vh;
+    background-color: rgb(14, 67, 48);
+
+}
+
+#top .center-container{
+    width: 1300px;
+    height: 100%;
+    /* background-color:lightblue; */
+    margin: auto;
+
+}
+#top header{
+    width: 100%;
+    height: 100px;
+    /* background-color: darkcyan; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#top header .logo{
+    font-size: 30px;
+    color: white;
+
+}
+#top .logo span{
+    font-weight: bold;
+}
+#top header nav ul{
+    display: flex;
+    font-size: 20px;
+    list-style: none;
+    gap: 0 20px;
+}
+
+#top ul li a{
+    color: white;
+    text-decoration: none;
+    padding: 7px 30px;
+    border-radius: 5px;
+}
+#top ul li a:hover{
+    background-color: rgb(108, 132, 132);
+}
+#top .content-container{
+    width:100%;
+    height: calc(100% - 100px);
+    /* background-color: rgb(38, 113, 140); */
+    display: flex;
+    gap:20px 0px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+
+}
+#top h1{
+    font-size: 45px;
+    width: 380px;
+}
+#top h1 span{
+    color: gold;
+}
+#top p{
+    font-size: 21px;
+}
+#top button{
+    padding: 10px 70px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    border-color: transparent;
+    border:2px solid white
+    
+}
+#top button:hover{
+    background-color: rgb(211, 83, 83);
+    cursor: pointer;
+
+}
