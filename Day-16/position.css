@@ -1,0 +1,44 @@
+::after,*::before{
+    box-sizing: border-box;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content:center ;
+}
+section{
+    height: 600px;
+    width:1000px;
+    border:2px solid black;
+    background-color: aquamarine;
+    position: relative;
+    display: flex;
+
+}
+section .card{
+    width:150px;
+    height:150px;
+    /* background-color: brown; */
+    text-align: center;
+    /* position: absolute; */
+    /* left:120px;
+    bottom: 120px; */
+}
+
+.card-1{
+    background-color: blanchedalmond;
+}
+.card-2{
+    background-color: brown;
+}
+.card-3{
+    background-color: chocolate;
+}
