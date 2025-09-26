@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [activeLink, setActiveLink] = useState('home');
+
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -20,24 +22,19 @@ const Navbar = () => {
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
-  const handleLinkClick = (linkName) => {
-    setActiveLink(linkName);
-    closeMobileMenu();
-  };
-
   const navLinks = [
-    { id: 'home', label: 'Home' },
-    { id: 'services', label: 'Services' },
-    { id: 'about', label: 'About Us' },
-    { id: 'contact', label: 'Contact' }
+    { to: '/', label: 'Home' },
+    { to: '/services', label: 'Services' },
+    { to: '/about', label: 'About Us' },
+    { to: '/contact', label: 'Contact' }
   ];
 
   return (
     <>
       {/* Navbar */}
-      <nav className={`text-slate-700 py-4 px-6 fixed top-0 left-0 w-full transition-all duration-500 z-50 ${
+      <nav className={`text-gray-900 py-4 px-6 fixed top-0 left-0 w-full transition-all duration-500 z-50 ${
         isScrolled 
-          ? 'bg-white/95 backdrop-blur-lg shadow-lg shadow-blue-600/5 border-b border-blue-200/30' 
+          ? 'bg-white/95 backdrop-blur-lg shadow-lg shadow-blue-500/10 border-b border-blue-500/10' 
           : 'bg-white/90 backdrop-blur-sm'
       } ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
 
@@ -46,17 +43,19 @@ const Navbar = () => {
           <div className={`flex items-center space-x-3 transition-all duration-700 ${
             isLoaded ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'
           }`}>
-            <button onClick={() => handleLinkClick('home')} className="flex items-center space-x-3 hover:opacity-80 transition-all duration-300 group">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-blue-600/25">
-                <span className="text-white font-bold text-sm transition-all duration-300 group-hover:scale-110">TS</span>
+            <Link to="/" onClick={closeMobileMenu} className="flex items-center space-x-3 hover:opacity-80 transition-all duration-300 group">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-lg group-hover:shadow-blue-500/25">
+                <span className="text-white font-bold text-lg transition-all duration-300">TS</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-bold text-gray-900 leading-none">
-                  Team <span className="bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">TSIL</span>
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent leading-none">
+                  Team TSIL
                 </span>
-                <span className="text-xs text-gray-500 font-medium">Digital Solutions</span>
+                <span className="text-xs text-gray-500 font-medium leading-none mt-1">
+                  Digital Solutions
+                </span>
               </div>
-            </button>
+            </Link>
           </div>
 
           {/* Desktop Navigation Links */}
@@ -64,11 +63,12 @@ const Navbar = () => {
             isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-5 opacity-0'
           }`}>
             {navLinks.map((link, index) => (
-              <button
-                key={link.id}
-                onClick={() => handleLinkClick(link.id)}
-                className={`relative font-semibold text-lg transition-all duration-300 group ${
-                  activeLink === link.id 
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={closeMobileMenu}
+                className={`relative font-semibold transition-all duration-300 group ${
+                  location.pathname === link.to 
                     ? 'text-blue-600' 
                     : 'text-gray-700 hover:text-blue-600'
                 }`}
@@ -76,25 +76,26 @@ const Navbar = () => {
                   transitionDelay: `${300 + index * 100}ms`,
                 }}
               >
-                <span className="relative z-10">{link.label}</span>
-                <div className={`absolute inset-x-0 -bottom-1 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-700 transition-all duration-300 origin-center ${
-                  activeLink === link.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                <span className="relative z-10 text-base">{link.label}</span>
+                <div className={`absolute inset-x-0 -bottom-1 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-300 origin-center ${
+                  location.pathname === link.to ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                 }`}></div>
-              </button>
+                {/* Hover background */}
+                <div className="absolute inset-0 -mx-3 -my-2 bg-blue-50/50 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 -z-10"></div>
+              </Link>
             ))}
           </div>
 
           {/* Desktop CTA Button */}
-          <div className={`hidden md:flex items-center space-x-4 transition-all duration-700 delay-500 ${
+          <div className={`hidden md:flex items-center transition-all duration-700 delay-500 ${
             isLoaded ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
           }`}>
-            <button className="text-gray-600 hover:text-blue-600 transition-all duration-300 font-medium">
-              Login
-            </button>
-            <button className="relative bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 font-semibold overflow-hidden group shadow-lg hover:shadow-xl">
-              <span className="relative z-10">Get Started</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-            </button>
+            <Link to="/contact">
+              <button className="relative bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-6 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 font-semibold text-base overflow-hidden group shadow-lg shadow-blue-500/25">
+                <span className="relative z-10">Get Started</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              </button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -127,30 +128,29 @@ const Navbar = () => {
             ? 'max-h-96 opacity-100 translate-y-0' 
             : 'max-h-0 opacity-0 -translate-y-5'
         }`}>
-          <div className="px-2 pt-4 pb-3 space-y-1 bg-white/95 backdrop-blur-lg mt-4 rounded-xl border border-blue-200/30 shadow-lg shadow-blue-600/5">
+          <div className="px-2 pt-4 pb-3 space-y-2 bg-white/95 backdrop-blur-lg mt-4 rounded-2xl border border-blue-100 shadow-lg shadow-blue-500/10">
             {navLinks.map((link, index) => (
-              <button
-                key={link.id}
-                onClick={() => handleLinkClick(link.id)}
-                className={`w-full text-left block px-4 py-3 text-base font-semibold rounded-lg transition-all duration-300 ${
-                  activeLink === link.id 
-                    ? 'text-blue-600 bg-blue-50 border-l-4 border-blue-600' 
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={closeMobileMenu}
+                className={`block px-4 py-3 text-base font-semibold rounded-xl transition-all duration-300 ${
+                  location.pathname === link.to 
+                    ? 'text-blue-600 bg-blue-50 border border-blue-100' 
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50/50'
                 }`}
               >
                 {link.label}
-              </button>
+              </Link>
             ))}
-            
-            {/* Mobile CTA Buttons */}
-            <div className="px-3 py-3 space-y-3 border-t border-gray-200 mt-4 pt-4">
-              <button className="w-full text-gray-600 hover:text-blue-600 px-4 py-2 text-center font-medium transition-all duration-300">
-                Login
-              </button>
-              <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 font-semibold relative overflow-hidden group shadow-lg">
-                <span className="relative z-10">Get Started</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              </button>
+            {/* Mobile CTA Button */}
+            <div className="px-2 py-3">
+              <Link to="/contact" onClick={closeMobileMenu}>
+                <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 font-semibold relative overflow-hidden group shadow-lg">
+                  <span className="relative z-10">Get Started</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -158,59 +158,51 @@ const Navbar = () => {
         {/* Mobile Menu Backdrop */}
         <div 
           className={`md:hidden fixed inset-0 bg-black transition-all duration-500 -z-10 ${
-            isMobileMenuOpen ? 'bg-opacity-30 backdrop-blur-sm' : 'bg-opacity-0 pointer-events-none'
+            isMobileMenuOpen ? 'bg-opacity-20 backdrop-blur-sm' : 'bg-opacity-0 pointer-events-none'
           }`}
           onClick={closeMobileMenu}
         ></div>
       </nav>
 
       {/* Professional Banner */}
-      <div className="fixed top-[72px] w-full z-40 bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-2.5 shadow-md">
-        <div className="animate-marquee whitespace-nowrap overflow-hidden">
-          <div className="inline-block animate-scroll">
-            <span className="text-sm font-medium inline-block px-8">
-              🏢 Professional Digital Solutions That Drive Business Growth
+      <div className="fixed top-20 w-full z-40 bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-2 border-b border-blue-500/20">
+        <div className="overflow-hidden whitespace-nowrap">
+          <div className="animate-marquee inline-block text-sm font-medium">
+            <span className="inline-flex items-center mx-8">
+              <span className="w-2 h-2 bg-white rounded-full mr-2"></span>
+              Team TSIL - Professional Digital Solutions That Drive Results
             </span>
-            <span className="text-sm font-medium inline-block px-8">
-              ⚡ Transform Your Operations with Expert Technology Consulting
+            <span className="inline-flex items-center mx-8">
+              <span className="w-2 h-2 bg-white rounded-full mr-2"></span>
+              Transform Your Business With Expert Technology Solutions
             </span>
-            <span className="text-sm font-medium inline-block px-8">
-              🌟 Trusted by 50+ Enterprise Clients Worldwide
+            <span className="inline-flex items-center mx-8">
+              <span className="w-2 h-2 bg-white rounded-full mr-2"></span>
+              Innovative Digital Strategies For Sustainable Growth
             </span>
-            <span className="text-sm font-medium inline-block px-8">
-              📅 Schedule Your Strategic Consultation Today
+            <span className="inline-flex items-center mx-8">
+              <span className="w-2 h-2 bg-white rounded-full mr-2"></span>
+              Trusted by 50+ Clients Worldwide For Excellence
             </span>
-            <span className="text-sm font-medium inline-block px-8">
-              🚀 Innovative Solutions for Digital Transformation
-            </span>
-            <span className="text-sm font-medium inline-block px-8">
-              💼 Enterprise-Grade Security and Scalability
+            <span className="inline-flex items-center mx-8">
+              <span className="w-2 h-2 bg-white rounded-full mr-2"></span>
+              Schedule Your Free Consultation Today
             </span>
           </div>
         </div>
       </div>
 
       {/* Spacer to prevent content from being hidden behind fixed navbar */}
-      <div className="h-28"></div>
+      <div className="h-24"></div>
 
-      {/* Custom CSS for marquee animation */}
+      {/* CSS for marquee animation */}
       <style jsx>{`
-        .animate-scroll {
-          animation: scroll 30s linear infinite;
+        @keyframes marquee {
+          0% { transform: translateX(100%); }
+          100% { transform: translateX(-100%); }
         }
-        
-        @keyframes scroll {
-          0% {
-            transform: translateX(100%);
-          }
-          100% {
-            transform: translateX(-100%);
-          }
-        }
-        
         .animate-marquee {
-          mask: linear-gradient(90deg, transparent, white 10%, white 90%, transparent);
-          -webkit-mask: linear-gradient(90deg, transparent, white 10%, white 90%, transparent);
+          animation: marquee 30s linear infinite;
         }
       `}</style>
     </>
