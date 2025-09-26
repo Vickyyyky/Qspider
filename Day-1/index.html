@@ -1,41 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Users, Target, Heart, Lightbulb, Shield, Handshake, Star, Award, 
-  TrendingUp, Globe, Phone, MapPin, ChevronRight, ArrowUp, X, 
-  Building, Code, Database, Cloud, Smartphone, Zap, Lock, 
-  MessageCircle, Download, Share, Mail, Calendar, Clock
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 
-const AboutUs = () => {
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [animatedNumbers, setAnimatedNumbers] = useState({
-    projects: 0,
-    clients: 0,
-    experience: 0,
-    satisfaction: 0
-  });
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [showScrollTop, setShowScrollTop] = useState(false);
-  const [visibleSections, setVisibleSections] = useState(new Set());
-  const [activeCard, setActiveCard] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(true);
+const Footer = () => {
   const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [subscriptionStatus, setSubscriptionStatus] = useState('');
-
-  const sectionRefs = useRef([]);
-
-  // Page load animation
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Scroll to top function
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isVisible, setIsVisible] = useState({});
 
   // Intersection Observer for scroll animations
   useEffect(() => {
@@ -43,820 +11,352 @@ const AboutUs = () => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const sectionIndex = sectionRefs.current.indexOf(entry.target);
-            if (sectionIndex !== -1) {
-              setVisibleSections(prev => new Set([...prev, sectionIndex]));
-            }
+            setIsVisible(prev => ({
+              ...prev,
+              [entry.target.id]: true
+            }));
           }
         });
       },
-      { threshold: 0.15, rootMargin: '50px' }
+      { threshold: 0.1, rootMargin: '50px' }
     );
 
-    const currentRefs = sectionRefs.current;
-    currentRefs.forEach((ref) => {
-      if (ref) observer.observe(ref);
-    });
+    const sections = document.querySelectorAll('.footer-animate');
+    sections.forEach((section) => observer.observe(section));
 
-    return () => {
-      currentRefs.forEach((ref) => {
-        if (ref) observer.unobserve(ref);
-      });
-    };
+    return () => observer.disconnect();
   }, []);
 
-  // Handle scroll events
-  useEffect(() => {
-    const handleScroll = () => {
-      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scrolled = (winScroll / height) * 100;
-      setScrollProgress(scrolled);
-      setShowScrollTop(winScroll > 400);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Animate numbers on component mount
-  useEffect(() => {
-    if (!isLoaded) return;
-
-    const targets = { projects: 500, clients: 150, experience: 8, satisfaction: 99 };
-    const duration = 2000;
-    const steps = 50;
-    const interval = duration / steps;
-
-    const numberTimer = setInterval(() => {
-      setAnimatedNumbers(prev => {
-        const newNumbers = {};
-        Object.keys(targets).forEach(key => {
-          const increment = targets[key] / steps;
-          newNumbers[key] = Math.min(prev[key] + increment, targets[key]);
-        });
-        return newNumbers;
-      });
-    }, interval);
-
-    setTimeout(() => clearInterval(numberTimer), duration);
-    return () => clearInterval(numberTimer);
-  }, [isLoaded]);
-
-  // Auto-rotate testimonials
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    const testimonialTimer = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-
-    return () => clearInterval(testimonialTimer);
-  }, [isPlaying]);
-
-  // Newsletter subscription handler
   const handleSubscribe = (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setSubscriptionStatus('');
-    
-    setTimeout(() => {
-      setSubscriptionStatus(`Subscribed successfully with ${email}`);
+    if (email.trim()) {
+      setIsSubscribed(true);
       setEmail('');
-      setIsSubmitting(false);
-    }, 2000);
-  };
-
-  // Enhanced testimonials with detailed content
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "Tech Entrepreneur",
-      company: "InnovateTech Solutions",
-      content: "Working with this team transformed our business. Their innovative solutions exceeded our expectations and delivered measurable results.",
-      rating: 5,
-      project: "E-commerce Platform",
-      duration: "6 months",
-      results: "300% revenue growth, 50% faster load times"
-    },
-    {
-      name: "Michael Chen",
-      role: "Startup Founder",
-      company: "NexGen Analytics", 
-      content: "The expertise and dedication shown by the team is unmatched. They delivered a scalable solution that handles our growing user base seamlessly.",
-      rating: 5,
-      project: "AI-Powered Analytics",
-      duration: "4 months",
-      results: "90% accuracy improvement, 75% cost reduction"
-    },
-    {
-      name: "Emily Rodriguez",
-      role: "Product Manager",
-      company: "Global Retail Corp",
-      content: "Professional, reliable, and results-driven. They delivered exactly what we needed on time and within budget.",
-      rating: 5,
-      project: "Mobile App Development",
-      duration: "8 months",
-      results: "4.8★ app rating, 2M+ downloads"
+      setTimeout(() => setIsSubscribed(false), 3000);
     }
-  ];
-
-  // Enhanced values with detailed information
-  const values = [
-    {
-      icon: Lightbulb,
-      title: "Innovation",
-      description: "We embrace cutting-edge technologies and creative solutions to drive digital transformation.",
-      features: ["AI Research Lab", "Blockchain Solutions", "IoT Integration", "AR/VR Development"],
-      color: "blue"
-    },
-    {
-      icon: Shield,
-      title: "Integrity",
-      description: "Trust and transparency form the foundation of our client relationships and business practices.",
-      features: ["Transparent Pricing", "Regular Reporting", "Security Compliance", "Ethical Standards"],
-      color: "indigo"
-    },
-    {
-      icon: Heart,
-      title: "Customer-Centricity", 
-      description: "Your success is our priority. We tailor solutions to meet your unique business needs.",
-      features: ["Dedicated Managers", "Weekly Reviews", "24/7 Support", "Custom Solutions"],
-      color: "blue"
-    },
-    {
-      icon: Handshake,
-      title: "Collaboration",
-      description: "We believe in the power of teamwork and work as an extension of your team.",
-      features: ["Agile Methodology", "Joint Planning", "Regular Workshops", "Team Integration"],
-      color: "indigo"
-    },
-    {
-      icon: Star,
-      title: "Excellence",
-      description: "We strive for perfection in every project, maintaining the highest global standards.",
-      features: ["Quality Assurance", "Code Reviews", "Performance Optimization", "Best Practices"],
-      color: "blue"
-    },
-    {
-      icon: TrendingUp,
-      title: "Growth",
-      description: "We focus on sustainable growth and scalable solutions for long-term success.",
-      features: ["Scalable Architecture", "Performance Metrics", "Continuous Optimization", "Future-Ready Solutions"],
-      color: "indigo"
-    }
-  ];
-
-  // Enhanced team with more details
-  const team = [
-    {
-      name: "Mr. Purushottam P",
-      role: "Chief Executive Officer",
-      bio: "Visionary leader with 15+ years in tech innovation. Drives strategic growth and operational excellence across global markets.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
-      expertise: ["Strategic Planning", "Business Development", "Team Leadership"],
-      experience: "15+ years"
-    },
-    {
-      name: "Dr. Uttam Singhal", 
-      role: "Managing Director",
-      bio: "PhD in Computer Science with expertise in AI/ML. Leads technical innovation and complex project implementations.",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
-      expertise: ["AI/ML", "Technology Strategy", "Research & Development"],
-      experience: "12+ years"
-    },
-    {
-      name: "Mr. Siddharth Kashyap",
-      role: "Chief Financial Officer", 
-      bio: "CPA with 12+ years in financial management. Ensures fiscal responsibility and sustainable growth strategies.",
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop&crop=face",
-      expertise: ["Financial Planning", "Risk Management", "Investment Strategy"],
-      experience: "12+ years"
-    }
-  ];
-
-  // Services offered
-  const services = [
-    {
-      icon: Cloud,
-      title: "Cloud Solutions",
-      description: "Scalable cloud infrastructure and migration services for modern businesses",
-      features: ["AWS/Azure/GCP", "Migration Services", "Cost Optimization", "Security Compliance"],
-      projects: 150
-    },
-    {
-      icon: Smartphone,
-      title: "Mobile Development",
-      description: "Native and cross-platform mobile applications that engage users",
-      features: ["iOS & Android", "React Native", "Flutter", "Progressive Web Apps"],
-      projects: 200
-    },
-    {
-      icon: Database,
-      title: "Data Analytics",
-      description: "Big data solutions and business intelligence for informed decisions",
-      features: ["Machine Learning", "Data Visualization", "Predictive Analytics", "BI Tools"],
-      projects: 120
-    },
-    {
-      icon: Zap,
-      title: "Digital Transformation",
-      description: "End-to-end digital modernization services for competitive advantage",
-      features: ["Process Automation", "Legacy Modernization", "Digital Strategy", "Change Management"],
-      projects: 80
-    }
-  ];
-
-  const openCard = (cardType, data) => {
-    setActiveCard({ type: cardType, data });
-  };
-
-  const closeCard = () => {
-    setActiveCard(null);
-  };
-
-  const nextTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-  };
-
-  const prevTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
-
-  // Add ref to section
-  const addToRefs = (el) => {
-    if (el && !sectionRefs.current.includes(el)) {
-      sectionRefs.current.push(el);
-    }
-  };
-
-  // Detail Card Component
-  const DetailCard = ({ card, onClose }) => {
-    if (!card) return null;
-
-    return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200">
-          <div className="p-8">
-            <div className="flex justify-between items-start mb-6">
-              <h3 className="text-3xl font-bold text-blue-600">{card.data.title || card.data.name}</h3>
-              <button 
-                onClick={onClose}
-                className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
-              >
-                <X className="w-6 h-6 text-gray-600" />
-              </button>
-            </div>
-
-            {card.type === 'value' && (
-              <div className="space-y-6">
-                <p className="text-gray-700 text-lg leading-relaxed">{card.data.description}</p>
-                <div>
-                  <h4 className="text-xl font-semibold mb-4 text-gray-800">Key Features</h4>
-                  <div className="grid md:grid-cols-2 gap-3">
-                    {card.data.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                        <span className="text-gray-700">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {card.type === 'service' && (
-              <div className="space-y-6">
-                <p className="text-gray-700 text-lg leading-relaxed">{card.data.description}</p>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="text-xl font-semibold mb-3 text-gray-800">Service Features</h4>
-                    <div className="space-y-2">
-                      {card.data.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center space-x-3">
-                          <Zap className="w-4 h-4 text-blue-600" />
-                          <span className="text-gray-700">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="text-xl font-semibold mb-3 text-gray-800">Project Statistics</h4>
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                        <span className="text-gray-600">Completed Projects:</span>
-                        <span className="text-blue-600 font-bold">{card.data.projects}+</span>
-                      </div>
-                      <div className="flex justify-between items-center p-3 bg-indigo-50 rounded-lg">
-                        <span className="text-gray-600">Success Rate:</span>
-                        <span className="text-indigo-600 font-bold">98%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {card.type === 'testimonial' && (
-              <div className="space-y-6">
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
-                  <div className="flex items-center space-x-4 mb-4">
-                    <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                      {card.data.name.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <div>
-                      <h4 className="text-xl font-bold text-gray-800">{card.data.name}</h4>
-                      <p className="text-blue-600">{card.data.role} • {card.data.company}</p>
-                    </div>
-                  </div>
-                  <div className="flex mb-4">
-                    {[...Array(card.data.rating)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-amber-400 fill-current" />
-                    ))}
-                  </div>
-                  <blockquote className="text-gray-700 text-lg italic">"{card.data.content}"</blockquote>
-                </div>
-                
-                <div className="grid md:grid-cols-3 gap-4">
-                  <div className="bg-white border border-gray-200 rounded-lg p-4">
-                    <div className="text-sm text-gray-600 mb-1">Project</div>
-                    <div className="text-blue-600 font-semibold">{card.data.project}</div>
-                  </div>
-                  <div className="bg-white border border-gray-200 rounded-lg p-4">
-                    <div className="text-sm text-gray-600 mb-1">Duration</div>
-                    <div className="text-indigo-600 font-semibold">{card.data.duration}</div>
-                  </div>
-                  <div className="bg-white border border-gray-200 rounded-lg p-4">
-                    <div className="text-sm text-gray-600 mb-1">Results</div>
-                    <div className="text-green-600 font-semibold">{card.data.results}</div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900 overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-100/30 rounded-full blur-3xl"></div>
-        <div className="absolute top-40 right-20 w-96 h-96 bg-indigo-100/30 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-blue-50/40 rounded-full blur-3xl"></div>
+    <footer className="relative bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900 py-16 px-6 overflow-hidden">
+      {/* Decorative background elements matching home page */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 right-1/4 w-72 h-72 bg-blue-100/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-indigo-100/20 rounded-full blur-3xl"></div>
       </div>
-
-      {/* Scroll Progress Bar */}
-      <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
+      
+      <div className="max-w-7xl mx-auto relative z-10">
         <div 
-          className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-300"
-          style={{ width: `${scrollProgress}%` }}
-        ></div>
-      </div>
-
-      {/* Scroll to Top Button */}
-      <button
-        onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center transition-all duration-300 z-40 shadow-lg hover:scale-110 ${
-          showScrollTop ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
-        }`}
-      >
-        <ArrowUp className="w-6 h-6 text-white" />
-      </button>
-
-      {/* Detail Card Modal */}
-      <DetailCard card={activeCard} onClose={closeCard} />
-
-      {/* Hero Section */}
-      <section 
-        ref={addToRefs}
-        className={`relative py-20 transition-all duration-1000 ${
-          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className={`inline-block mb-4 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-blue-200 shadow-sm transition-all duration-1000 delay-200 ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}>
-                <span className="text-blue-700 font-semibold">About Team TSIL</span>
+          id="footer-main"
+          className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 footer-animate transition-all duration-1000 ${
+            isVisible['footer-main'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
+          
+          {/* Company Info - Matching navbar logo style */}
+          <div className={`space-y-6 sm:col-span-2 lg:col-span-1 transition-all duration-1000 delay-200 ${
+            isVisible['footer-main'] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
+          }`}>
+            {/* Logo matching navbar */}
+            <div className="flex items-center space-x-3 mb-6 group cursor-pointer">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-lg group-hover:shadow-blue-500/25">
+                <span className="text-white font-bold text-xl">TS</span>
               </div>
-
-              <h1 className={`text-5xl md:text-6xl font-bold leading-tight transition-all duration-1000 delay-300 ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}>
-                Who We
-                <span className="block bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
-                  Are
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent leading-none">
+                  Team TSIL
                 </span>
-              </h1>
-              
-              <p className={`text-xl text-gray-600 leading-relaxed transition-all duration-1000 delay-500 ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}>
-                We are a global network of seasoned experts, innovators, and visionaries. Located at the heart of digital innovation, we deliver <span className="text-blue-600 font-semibold">cutting-edge technology solutions</span> and customized IT services that transform businesses.
-              </p>
-
-              <p className={`text-lg text-gray-500 leading-relaxed transition-all duration-1000 delay-700 ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}>
-                Whether you're a startup seeking scalable solutions or an enterprise looking to optimize operations, we offer tailored strategies that deliver measurable results.
-              </p>
-              
-              {/* Stats */}
-              <div className={`grid grid-cols-2 gap-6 transition-all duration-1000 delay-900 ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}>
-                {[
-                  { label: "Projects Completed", value: Math.floor(animatedNumbers.projects), suffix: "+" },
-                  { label: "Happy Clients", value: Math.floor(animatedNumbers.clients), suffix: "+" },
-                  { label: "Years Experience", value: Math.floor(animatedNumbers.experience), suffix: "" },
-                  { label: "Client Satisfaction", value: Math.floor(animatedNumbers.satisfaction), suffix: "%" }
-                ].map((stat, idx) => (
-                  <div key={idx} className="text-center transform hover:scale-110 transition-transform duration-300 p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-lg">
-                    <div className="text-3xl font-bold text-blue-600 mb-2">{stat.value}{stat.suffix}</div>
-                    <div className="text-sm text-gray-500">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* CTA Buttons */}
-              <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-1000 delay-1000 ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}>
-                <button className="group bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-500 transform hover:scale-105 hover:shadow-xl flex items-center space-x-3 shadow-lg">
-                  <Download className="w-5 h-5" />
-                  <span>Download Brochure</span>
-                  <span className="group-hover:translate-x-2 transition-transform duration-300">→</span>
-                </button>
-                <button className="group border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-500 transform hover:scale-105 flex items-center space-x-3 bg-white/70 backdrop-blur-sm">
-                  <Share className="w-5 h-5" />
-                  <span>Share Profile</span>
-                </button>
+                <span className="text-sm text-gray-500 font-medium leading-none mt-1">
+                  Digital Solutions
+                </span>
               </div>
             </div>
             
-            <div className={`relative transition-all duration-1000 delay-700 ${
-              isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20'
-            }`}>
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/50 backdrop-blur-sm">
-                <img 
-                  src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=600&h=400&fit=crop" 
-                  alt="Team working"
-                  className="w-full h-64 md:h-80 object-cover transform hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-600/20 to-transparent"></div>
-              </div>
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-blue-100/40 rounded-full backdrop-blur-sm"></div>
-              <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-indigo-100/40 rounded-full backdrop-blur-sm"></div>
+            <p className="text-gray-600 leading-relaxed">
+              We deliver enterprise-grade digital solutions that drive growth, enhance efficiency, 
+              and transform businesses through innovative technology and strategic expertise.
+            </p>
+            
+            {/* Social Media Links with consistent styling */}
+            <div className="flex space-x-4">
+              {[
+                { 
+                  href: "https://facebook.com", 
+                  label: "Facebook", 
+                  icon: (
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                  )
+                },
+                { 
+                  href: "https://twitter.com", 
+                  label: "Twitter",
+                  icon: (
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                    </svg>
+                  )
+                },
+                { 
+                  href: "https://linkedin.com", 
+                  label: "LinkedIn",
+                  icon: (
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                  )
+                },
+                { 
+                  href: "https://instagram.com", 
+                  label: "Instagram",
+                  icon: (
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12.017 0C8.396 0 7.989.013 7.041.048 6.094.082 5.52.204 5.02.43c-.513.221-.947.518-1.379.95-.432.432-.729.866-.95 1.379-.226.5-.348 1.074-.382 2.021C2.278 6.728 2.278 7.133 2.278 10.754v2.492c0 3.621 0 4.026.031 4.974.034.947.156 1.521.382 2.021.221.513.518.947.95 1.379.432.432.866.729 1.379.95.5.226 1.074.348 2.021.382.948.035 1.353.035 4.974.035 3.621 0 4.026 0 4.974-.035.947-.034 1.521-.156 2.021-.382.513-.221.947-.518 1.379-.95.432-.432.729-.866.95-1.379.226-.5.348-1.074.382-2.021.035-.948.035-1.353.035-4.974V7.041c0-3.621 0-4.026-.035-4.974-.034-.947-.156-1.521-.382-2.021a3.704 3.704 0 00-.95-1.379A3.704 3.704 0 0019.021.43c-.5-.226-1.074-.348-2.021-.382C16.052.013 15.647.013 12.017.013h.003zm-.256 5.487c3.018 0 5.488 2.472 5.488 5.504 0 3.032-2.47 5.503-5.488 5.503-3.018 0-5.487-2.471-5.487-5.503 0-3.032 2.469-5.504 5.487-5.504zm0 2.269c-1.739 0-3.236 1.408-3.236 3.235 0 1.826 1.497 3.235 3.236 3.235 1.739 0 3.235-1.409 3.235-3.235 0-1.827-1.496-3.235-3.235-3.235zm5.488-4.427c-.706 0-1.277-.57-1.277-1.276s.571-1.277 1.277-1.277c.706 0 1.276.57 1.276 1.277s-.57 1.276-1.276 1.276z"/>
+                    </svg>
+                  )
+                }
+              ].map((social, index) => (
+                <a 
+                  key={social.label}
+                  href={social.href} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-white border border-gray-200 hover:border-blue-300 rounded-xl flex items-center justify-center text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 hover:scale-110 hover:shadow-lg relative overflow-hidden group"
+                  aria-label={social.label}
+                  style={{ 
+                    transitionDelay: isVisible['footer-main'] ? `${(index + 1) * 100}ms` : '0ms',
+                    transform: isVisible['footer-main'] ? 'scale(1)' : 'scale(0.8)',
+                    opacity: isVisible['footer-main'] ? 1 : 0
+                  }}
+                >
+                  <div className="relative z-10 group-hover:scale-110 transition-transform duration-300">
+                    {social.icon}
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-100/50 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                </a>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Services Section */}
-      <section 
-        ref={addToRefs}
-        className={`py-20 transition-all duration-1000 ${
-          visibleSections.has(1) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={`text-center mb-16 transition-all duration-1000 delay-200 ${
-            visibleSections.has(1) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          {/* Quick Links */}
+          <div className={`space-y-4 transition-all duration-1000 delay-300 ${
+            isVisible['footer-main'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-              Our Services
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive IT solutions tailored to your business needs
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {services.map((service, idx) => (
-              <div 
-                key={idx} 
-                className={`group bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 hover:border-blue-300 transition-all duration-500 hover:transform hover:scale-105 hover:shadow-xl cursor-pointer shadow-lg ${
-                  visibleSections.has(1) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
-                style={{ transitionDelay: visibleSections.has(1) ? `${idx * 100}ms` : '0ms' }}
-                onClick={() => openCard('service', service)}
-              >
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <service.icon className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors duration-300">{service.title}</h3>
-                <p className="text-gray-600 text-sm mb-4 leading-relaxed">{service.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-blue-600 text-sm font-semibold">{service.projects}+ projects</span>
-                  <span className="text-blue-600 group-hover:translate-x-2 transition-transform duration-300">→</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Values Section */}
-      <section 
-        ref={addToRefs}
-        className={`py-20 transition-all duration-1000 ${
-          visibleSections.has(2) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={`text-center mb-16 transition-all duration-1000 delay-200 ${
-            visibleSections.has(2) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-              Our Values
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              The principles that guide our work and define our character
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {values.map((value, idx) => (
-              <div 
-                key={idx} 
-                className={`group bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-gray-200 hover:border-blue-300 transition-all duration-500 hover:transform hover:scale-105 hover:shadow-xl shadow-lg ${
-                  visibleSections.has(2) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
-                style={{ transitionDelay: visibleSections.has(2) ? `${idx * 100}ms` : '0ms' }}
-              >
-                <div className={`w-16 h-16 bg-gradient-to-r ${value.color === 'blue' ? 'from-blue-600 to-blue-700' : 'from-indigo-600 to-indigo-700'} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                  <value.icon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold mb-4 text-gray-900 group-hover:text-blue-600 transition-colors duration-300">{value.title}</h3>
-                <p className="text-gray-600 leading-relaxed mb-6">{value.description}</p>
-                <button 
-                  onClick={() => openCard('value', value)}
-                  className="w-full py-3 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 rounded-xl hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 transform hover:scale-105 font-medium"
-                >
-                  Learn More
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Team Section */}
-      <section 
-        ref={addToRefs}
-        className={`py-20 transition-all duration-1000 ${
-          visibleSections.has(3) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={`text-center mb-16 transition-all duration-1000 delay-200 ${
-            visibleSections.has(3) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-              Leadership Team
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Meet the visionary leaders driving our company forward
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {team.map((member, idx) => (
-              <div 
-                key={idx} 
-                className={`group bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-gray-200 hover:border-blue-300 transition-all duration-500 hover:transform hover:scale-105 hover:shadow-xl text-center shadow-lg ${
-                  visibleSections.has(3) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
-                style={{ transitionDelay: visibleSections.has(3) ? `${idx * 100}ms` : '0ms' }}
-              >
-                <div className="relative mb-6">
-                  <img 
-                    src={member.image} 
-                    alt={member.name}
-                    className="w-24 h-24 mx-auto rounded-full object-cover border-4 border-white shadow-lg group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
-                    <Building className="w-4 h-4 text-white" />
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-gray-900 group-hover:text-blue-600 transition-colors duration-300">{member.name}</h3>
-                <p className="text-blue-600 font-semibold mb-3">{member.role}</p>
-                <p className="text-gray-600 text-sm mb-4 leading-relaxed">{member.bio}</p>
-                <div className="flex flex-wrap justify-center gap-2 mb-4">
-                  {member.expertise.slice(0, 2).map((skill, skillIdx) => (
-                    <span key={skillIdx} className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-xs">
-                      {skill}
+            <h3 className="text-lg font-bold mb-4 text-gray-900">Quick Links</h3>
+            <ul className="space-y-3">
+              {[
+                { href: '#home', label: 'Home' },
+                { href: '#services', label: 'Services' },
+                { href: '#about', label: 'About Us' },
+                { href: '#projects', label: 'Projects' },
+                { href: '#contact', label: 'Contact' }
+              ].map((link, index) => (
+                <li key={link.href}>
+                  <a 
+                    href={link.href} 
+                    className="text-gray-600 hover:text-blue-600 transition-all duration-300 text-sm group relative inline-block"
+                    style={{ 
+                      transitionDelay: isVisible['footer-main'] ? `${400 + (index * 100)}ms` : '0ms',
+                      transform: isVisible['footer-main'] ? 'translateX(0)' : 'translateX(-10px)',
+                      opacity: isVisible['footer-main'] ? 1 : 0
+                    }}
+                  >
+                    <span className="group-hover:translate-x-2 transition-transform duration-300 inline-block">
+                      {link.label}
                     </span>
-                  ))}
-                </div>
-                <div className="text-sm text-gray-500">
-                  {member.experience} Experience
-                </div>
-              </div>
-            ))}
+                    <div className="absolute left-0 -bottom-1 h-0.5 bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left w-full"></div>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-      </section>
 
-      {/* Testimonials Section */}
-      <section 
-        ref={addToRefs}
-        className={`py-20 transition-all duration-1000 ${
-          visibleSections.has(4) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={`text-center mb-16 transition-all duration-1000 delay-200 ${
-            visibleSections.has(4) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          {/* Services */}
+          <div className={`space-y-4 transition-all duration-1000 delay-400 ${
+            isVisible['footer-main'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-              Client Testimonials
-            </h2>
-            <p className="text-xl text-gray-600">What our clients say about working with us</p>
+            <h3 className="text-lg font-bold mb-4 text-gray-900">Services</h3>
+            <ul className="space-y-3">
+              {[
+                { href: '#web-development', label: 'Web Development' },
+                { href: '#app-development', label: 'App Development' },
+                { href: '#ui-ux-design', label: 'UI/UX Design' },
+                { href: '#cyber-security', label: 'Cyber Security' },
+                { href: '#digital-marketing', label: 'Digital Marketing' },
+                { href: '#business-consultancy', label: 'Business Consultancy' }
+              ].map((service, index) => (
+                <li key={service.href}>
+                  <a 
+                    href={service.href} 
+                    className="text-gray-600 hover:text-blue-600 transition-all duration-300 text-sm group relative inline-block"
+                    style={{ 
+                      transitionDelay: isVisible['footer-main'] ? `${500 + (index * 100)}ms` : '0ms',
+                      transform: isVisible['footer-main'] ? 'translateX(0)' : 'translateX(-10px)',
+                      opacity: isVisible['footer-main'] ? 1 : 0
+                    }}
+                  >
+                    <span className="group-hover:translate-x-2 transition-transform duration-300 inline-block">
+                      {service.label}
+                    </span>
+                    <div className="absolute left-0 -bottom-1 h-0.5 bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left w-full"></div>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
-          
-          <div className={`relative transition-all duration-1000 delay-400 ${
-            visibleSections.has(4) ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-          }`}>
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 border border-gray-200 text-center transform hover:scale-105 transition-transform duration-500 shadow-lg hover:shadow-xl">
-              <div className="flex justify-center mb-6">
-                {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                  <Star key={i} className="w-6 h-6 text-amber-400 fill-current transform hover:scale-125 transition-transform duration-200" />
-                ))}
-              </div>
-              
-              <blockquote className="text-xl text-gray-700 mb-8 leading-relaxed max-w-3xl mx-auto">
-                "{testimonials[currentTestimonial].content}"
-              </blockquote>
-              
-              <div className="space-y-2">
-                <div className="text-lg font-semibold text-blue-600">
-                  {testimonials[currentTestimonial].name}
-                </div>
-                <div className="text-gray-500">
-                  {testimonials[currentTestimonial].role} • {testimonials[currentTestimonial].company}
-                </div>
-              </div>
 
-              <button
-                onClick={() => openCard('testimonial', testimonials[currentTestimonial])}
-                className="mt-6 px-6 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 rounded-full hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 transform hover:scale-105 text-sm font-medium"
-              >
-                View Details
-              </button>
-            </div>
-            
-            {/* Navigation */}
-            <div className="flex justify-center items-center space-x-4 mt-8">
-              <button
-                onClick={prevTestimonial}
-                className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300 text-white shadow-lg"
-              >
-                <ChevronRight className="w-5 h-5 rotate-180" />
-              </button>
-              
-              <div className="flex space-x-2">
-                {testimonials.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentTestimonial(idx)}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 transform hover:scale-150 ${
-                      idx === currentTestimonial 
-                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600' 
-                        : 'bg-gray-300'
+          {/* Contact Info */}
+          <div className={`space-y-4 transition-all duration-1000 delay-500 ${
+            isVisible['footer-main'] ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
+          }`}>
+            <h3 className="text-lg font-bold mb-4 text-gray-900">Contact</h3>
+            <div className="space-y-4">
+              {[
+                { 
+                  href: "mailto:team@tsil.com", 
+                  label: "team@tsil.com", 
+                  icon: (
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884zM18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                    </svg>
+                  ),
+                  clickable: true
+                },
+                { 
+                  href: "tel:+15551234567", 
+                  label: "+1 (555) 123-4567", 
+                  icon: (
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                    </svg>
+                  ),
+                  clickable: true
+                },
+                { 
+                  href: null, 
+                  label: "123 Business St, City, State", 
+                  icon: (
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/>
+                    </svg>
+                  ),
+                  clickable: false
+                }
+              ].map((contact, index) => {
+                const Component = contact.clickable ? 'a' : 'div';
+                return (
+                  <Component
+                    key={index}
+                    {...(contact.clickable ? { href: contact.href } : {})}
+                    className={`flex items-center space-x-3 text-gray-600 transition-all duration-300 group ${
+                      contact.clickable ? 'hover:text-blue-600 cursor-pointer' : ''
                     }`}
-                  />
-                ))}
-              </div>
-              
-              <button
-                onClick={nextTestimonial}
-                className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300 text-white shadow-lg"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+                    style={{ 
+                      transitionDelay: isVisible['footer-main'] ? `${600 + (index * 100)}ms` : '0ms',
+                      transform: isVisible['footer-main'] ? 'translateX(0)' : 'translateX(10px)',
+                      opacity: isVisible['footer-main'] ? 1 : 0
+                    }}
+                  >
+                    <div className={`w-8 h-8 bg-white border border-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center transition-all duration-300 ${
+                      contact.clickable ? 'group-hover:border-blue-300 group-hover:bg-blue-50 group-hover:scale-110' : ''
+                    }`}>
+                      {contact.icon}
+                    </div>
+                    <span className={`text-sm transition-transform duration-300 ${
+                      contact.clickable ? 'group-hover:translate-x-1' : ''
+                    }`}>
+                      {contact.label}
+                    </span>
+                  </Component>
+                );
+              })}
             </div>
-          </div>
+          </div >
         </div>
-      </section>
 
-      {/* Contact Section */}
-      <section 
-        ref={addToRefs}
-        className={`py-20 transition-all duration-1000 ${
-          visibleSections.has(5) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={`text-center mb-16 transition-all duration-1000 delay-200 ${
-            visibleSections.has(5) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-              Get In Touch
-            </h2>
-            <p className="text-xl text-gray-600">Ready to start your digital transformation journey?</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: MapPin,
-                title: "Address",
-                content: "Corporate Office: 809, Tower A, Pearls Omaxe, Netaji Subhash Place, Pitampura, New Delhi - 110034, INDIA"
-              },
-              {
-                icon: Phone,
-                title: "Phone", 
-                content: "Mobile: +91-9661824044 | Available 24/7"
-              },
-              {
-                icon: Mail,
-                title: "Email",
-                content: "info@teamitail.net.in | support@teamitail.net.in | Quick Response"
-              }
-            ].map((contact, idx) => (
-              <div 
-                key={idx} 
-                className={`bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-gray-200 text-center transform hover:scale-105 transition-all duration-500 shadow-lg hover:shadow-xl ${
-                  visibleSections.has(5) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
-                style={{ transitionDelay: visibleSections.has(5) ? `${400 + idx * 200}ms` : '0ms' }}
-              >
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <contact.icon className="w-8 h-8 text-white" />
+        {/* Newsletter Subscription */}
+        <div 
+          id="newsletter"
+          className={`mt-16 pt-8 border-t border-gray-200 footer-animate transition-all duration-1000 ${
+            isVisible.newsletter ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between space-y-6 lg:space-y-0 gap-8">
+            <div className={`flex-1 transition-all duration-1000 delay-200 ${
+              isVisible.newsletter ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
+            }`}>
+              <h4 className="text-xl font-bold mb-2 text-gray-900">Stay Updated</h4>
+              <p className="text-gray-600">Subscribe to get the latest news and insights about digital transformation and innovative solutions.</p>
+            </div>
+            <div className={`flex-1 max-w-md w-full transition-all duration-1000 delay-400 ${
+              isVisible.newsletter ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
+            }`}>
+              {isSubscribed ? (
+                <div className="flex items-center space-x-3 text-green-600 bg-green-50 px-4 py-3 rounded-xl border border-green-200 animate-pulse">
+                  <svg className="w-5 h-5 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                  </svg>
+                  <span className="text-sm font-semibold">Successfully subscribed!</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{contact.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{contact.content}</p>
-              </div>
-            ))}
-          </div>
-          
-          <div className={`text-center mt-12 transition-all duration-1000 delay-800 ${
-            visibleSections.has(5) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}>
-            <button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 px-12 py-4 rounded-xl text-lg font-semibold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-white">
-              Start Your Project Today
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter Section */}
-      <section 
-        ref={addToRefs}
-        className={`py-20 transition-all duration-1000 ${
-          visibleSections.has(6) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={`bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 rounded-3xl p-12 text-white shadow-2xl relative overflow-hidden ${
-            visibleSections.has(6) ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-          }`}>
-            {/* Background decoration */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-blue-700/20"></div>
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
-
-            <div className="relative z-10 text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Join Our Newsletter
-              </h2>
-              <p className="text-white/90 mb-8 text-lg max-w-2xl mx-auto">
-                Stay updated with the latest news, articles, and resources from Team TSIL. Get exclusive insights into digital transformation trends.
-              </p>
-              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 max-w-md mx-auto">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full px-6 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <button
-                  type="submit"
-                  className="px-8 py-3 bg-white text-blue-600 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-lg whitespace-nowrap"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Subscribing...' : 'Subscribe'}
-                </button>
-              </form>
-              {subscriptionStatus && (
-                <p className={`mt-4 ${subscriptionStatus.includes('successfully') ? 'text-green-200' : 'text-red-200'}`}>
-                  {subscriptionStatus}
-                </p>
+              ) : (
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                  <input 
+                    type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email" 
+                    className="flex-1 bg-white border border-gray-200 focus:border-blue-300 text-gray-900 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 focus:scale-[1.02]"
+                  />
+                  <button 
+                    onClick={handleSubscribe}
+                    className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-6 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 font-semibold whitespace-nowrap relative overflow-hidden group shadow-lg"
+                  >
+                    <span className="relative z-10">Subscribe</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  </button>
+                </div>
               )}
             </div>
           </div>
         </div>
-      </section>
-    </div>
-  );
-}
 
-export default AboutUs;
+        {/* Copyright */}
+        <div 
+          id="copyright"
+          className={`mt-12 pt-8 border-t border-gray-200 footer-animate transition-all duration-1000 ${
+            isVisible.copyright ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+          }`}
+        >
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+            <p className={`text-gray-500 text-sm text-center md:text-left transition-all duration-1000 delay-200 ${
+              isVisible.copyright ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5'
+            }`}>
+              © 2024 Team TSIL. All rights reserved.
+            </p>
+            <div className={`flex space-x-6 text-sm transition-all duration-1000 delay-400 ${
+              isVisible.copyright ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-5'
+            }`}>
+              <a 
+                href="#privacy" 
+                className="text-gray-500 hover:text-blue-600 transition-all duration-300 hover:scale-105 relative group"
+              >
+                Privacy Policy
+                <div className="absolute inset-x-0 -bottom-1 h-0.5 bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+              </a>
+              <span className="text-gray-300">|</span>
+              <a 
+                href="#terms" 
+                className="text-gray-500 hover:text-blue-600 transition-all duration-300 hover:scale-105 relative group"
+              >
+                Terms of Service
+                <div className="absolute inset-x-0 -bottom-1 h-0.5 bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
