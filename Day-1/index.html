@@ -1,822 +1,220 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default function Home() {
-  const [isVisible, setIsVisible] = useState({});
+const Navbar = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [activeService, setActiveService] = useState(0);
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [selectedService, setSelectedService] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const videoRef = useRef(null);
+  const [activeLink, setActiveLink] = useState('home');
 
-  // Intersection Observer for scroll animations
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(prev => ({
-              ...prev,
-              [entry.target.id]: true
-            }));
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '50px' }
-    );
-
-    // Observe all sections
-    const sections = document.querySelectorAll('.animate-section');
-    sections.forEach((section) => observer.observe(section));
-
-    return () => observer.disconnect();
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Initial load animation
   useEffect(() => {
-    setIsLoaded(true);
+    const timer = setTimeout(() => setIsLoaded(true), 100);
+    return () => clearTimeout(timer);
   }, []);
 
-  // Auto-rotate services
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveService((prev) => (prev + 1) % services.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
-  // Auto-rotate testimonials
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Close modal on escape key
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        closeModal();
-      }
-    };
-    
-    if (isModalOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isModalOpen]);
-
-  const openModal = (service) => {
-    setSelectedService(service);
-    setIsModalOpen(true);
+  const handleLinkClick = (linkName) => {
+    setActiveLink(linkName);
+    closeMobileMenu();
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedService(null);
-  };
-
-  const services = [
-    {
-      id: 'web-development',
-      title: 'Web Development',
-      description: 'Building custom web applications and websites using modern technologies and frameworks.',
-      detailedDescription: 'We create responsive, scalable, and high-performance web applications tailored to your business needs. Our full-stack development approach ensures seamless user experiences across all devices.',
-      features: ['React.js', 'Node.js', 'MongoDB', 'Express', 'Responsive Design', 'API Integration'],
-      benefits: [
-        'Increased online presence and visibility',
-        'Improved user engagement and conversion rates',
-        'Scalable architecture for future growth',
-        'Cross-browser and cross-device compatibility',
-        'Fast loading times and optimal performance'
-      ],
-      process: ['Discovery & Planning', 'UI/UX Design', 'Development', 'Testing & QA', 'Deployment', 'Maintenance'],
-      timeline: '4-12 weeks',
-      price: 'Starting from $5,000',
-      icon: '💻',
-      color: 'from-blue-600 to-indigo-700'
-    },
-    {
-      id: 'app-development',
-      title: 'App Development',
-      description: 'Creating mobile applications for iOS and Android platforms with native and cross-platform solutions.',
-      detailedDescription: 'We develop intuitive mobile applications that provide exceptional user experiences. Whether you need native iOS/Android apps or cross-platform solutions, we deliver quality and performance.',
-      features: ['React Native', 'Flutter', 'iOS Development', 'Android Development', 'Cross-platform', 'App Store Optimization'],
-      benefits: [
-        'Reach customers on their preferred devices',
-        'Enhanced user engagement and retention',
-        'Offline functionality and push notifications',
-        'App store optimization for better visibility',
-        'Regular updates and feature enhancements'
-      ],
-      process: ['Concept Validation', 'Wireframing', 'Prototyping', 'Development', 'Testing', 'Store Deployment'],
-      timeline: '6-16 weeks',
-      price: 'Starting from $8,000',
-      icon: '📱',
-      color: 'from-indigo-600 to-blue-700'
-    },
-    {
-      id: 'ui-ux-design',
-      title: 'UI/UX Design',
-      description: 'Designing intuitive user interfaces and experiences that engage and convert users.',
-      detailedDescription: 'Our design process focuses on creating beautiful, functional interfaces that users love. We combine aesthetics with usability to deliver designs that drive engagement and conversions.',
-      features: ['User Research', 'Wireframing', 'Prototyping', 'Visual Design', 'Usability Testing', 'Design Systems'],
-      benefits: [
-        'Improved user satisfaction and retention',
-        'Higher conversion rates and reduced bounce rates',
-        'Consistent brand experience across platforms',
-        'Accessible and inclusive design practices',
-        'Data-driven design decisions'
-      ],
-      process: ['Research & Analysis', 'Wireframes', 'Visual Design', 'Prototyping', 'User Testing', 'Handoff'],
-      timeline: '2-8 weeks',
-      price: 'Starting from $3,000',
-      icon: '🎨',
-      color: 'from-violet-600 to-purple-700'
-    },
-    {
-      id: 'cyber-security',
-      title: 'Cyber Security',
-      description: 'Protecting your digital assets with comprehensive security solutions and threat prevention.',
-      detailedDescription: 'We provide end-to-end security solutions to protect your business from cyber threats. Our proactive approach ensures your data and systems remain secure against evolving threats.',
-      features: ['Security Audits', 'Penetration Testing', 'Data Protection', 'Compliance', 'Risk Assessment', '24/7 Monitoring'],
-      benefits: [
-        'Protection against data breaches and attacks',
-        'Compliance with industry regulations',
-        'Peace of mind with 24/7 monitoring',
-        'Reduced risk of financial losses',
-        'Enhanced customer trust and reputation'
-      ],
-      process: ['Security Assessment', 'Vulnerability Analysis', 'Implementation', 'Monitoring', 'Incident Response', 'Ongoing Support'],
-      timeline: 'Ongoing',
-      price: 'Custom packages available',
-      icon: '🔒',
-      color: 'from-red-600 to-pink-700'
-    },
-    {
-      id: 'business-consultancy',
-      title: 'Business Consultancy',
-      description: 'Strategic business consulting to help you grow and optimize your operations.',
-      detailedDescription: 'We work with you to develop strategies that drive growth and optimize operations. Our consultants bring industry expertise to help you make informed decisions.',
-      features: ['Strategy Planning', 'Process Optimization', 'Digital Transformation', 'Market Analysis', 'Growth Strategies', 'Performance Metrics'],
-      benefits: [
-        'Data-driven strategic decisions',
-        'Optimized business processes and efficiency',
-        'Digital transformation guidance',
-        'Market insights and competitive analysis',
-        'Measurable performance improvements'
-      ],
-      process: ['Discovery', 'Analysis', 'Strategy Development', 'Implementation', 'Monitoring', 'Optimization'],
-      timeline: 'Project-based',
-      price: 'Custom consulting packages',
-      icon: '📊',
-      color: 'from-emerald-600 to-green-700'
-    },
-    {
-      id: 'digital-marketing',
-      title: 'Digital Marketing',
-      description: 'Drive growth with data-driven marketing strategies and cutting-edge digital campaigns.',
-      detailedDescription: 'We create comprehensive digital marketing strategies that increase visibility, drive traffic, and generate leads. Our data-driven approach ensures maximum ROI.',
-      features: ['SEO Optimization', 'Social Media Marketing', 'Content Strategy', 'PPC Advertising', 'Analytics', 'Conversion Optimization'],
-      benefits: [
-        'Increased brand awareness and visibility',
-        'Higher quality leads and conversions',
-        'Data-driven campaign optimization',
-        'Improved search engine rankings',
-        'Comprehensive performance analytics'
-      ],
-      process: ['Audit & Analysis', 'Strategy Development', 'Implementation', 'Monitoring', 'Optimization', 'Reporting'],
-      timeline: 'Ongoing',
-      price: 'Monthly packages from $1,500',
-      icon: '📈',
-      color: 'from-orange-600 to-red-600'
-    }
+  const navLinks = [
+    { id: 'home', label: 'Home' },
+    { id: 'services', label: 'Services' },
+    { id: 'about', label: 'About Us' },
+    { id: 'contact', label: 'Contact' }
   ];
-
-  const projects = [
-    {
-      title: 'E-commerce Platform',
-      category: 'Web Development',
-      image: '🛒',
-      description: 'Complete online shopping solution with payment integration'
-    },
-    {
-      title: 'Portfolio Website',
-      category: 'UI/UX Design',
-      image: '💼',
-      description: 'Creative portfolio showcasing amazing work and talent'
-    },
-    {
-      title: 'Mobile Banking App',
-      category: 'App Development',
-      image: '🏦',
-      description: 'Secure mobile banking with advanced features'
-    },
-    {
-      title: 'Corporate Website',
-      category: 'Web Development',
-      image: '🏢',
-      description: 'Professional corporate presence with CMS'
-    },
-    {
-      title: 'Food Delivery App',
-      category: 'App Development',
-      image: '🍕',
-      description: 'Food ordering and delivery platform'
-    },
-    {
-      title: 'Healthcare Portal',
-      category: 'Web Development',
-      image: '🏥',
-      description: 'Patient management and appointment system'
-    },
-    {
-      title: 'Fitness Tracking',
-      category: 'App Development',
-      image: '💪',
-      description: 'Health and fitness monitoring application'
-    },
-    {
-      title: 'Real Estate Platform',
-      category: 'Web Development',
-      image: '🏠',
-      description: 'Property listing and management system'
-    }
-  ];
-
-  const testimonials = [
-    {
-      name: 'Sarah Johnson',
-      role: 'CEO, TechStart Inc',
-      content: 'The team delivered exceptional results. Our website traffic increased by 300% in just 3 months!',
-      avatar: '👩‍💼',
-      rating: 5
-    },
-    {
-      name: 'Mike Chen',
-      role: 'Product Manager, InnovateCo',
-      content: 'Outstanding mobile app development. The user experience is seamless and engaging.',
-      avatar: '👨‍💼',
-      rating: 5
-    },
-    {
-      name: 'Emily Davis',
-      role: 'Marketing Director, GrowthLab',
-      content: 'Their digital marketing strategies transformed our online presence. Highly recommended!',
-      avatar: '👩‍🎨',
-      rating: 5
-    },
-    {
-      name: 'David Wilson',
-      role: 'CTO, SecureTech',
-      content: 'Robust security solutions that protected our business from potential threats.',
-      avatar: '👨‍🔬',
-      rating: 5
-    }
-  ];
-
-  const technologies = [
-    { name: 'React', icon: '⚛', category: 'Frontend' },
-    { name: 'Node.js', icon: '🟢', category: 'Backend' },
-    { name: 'Python', icon: '🐍', category: 'Backend' },
-    { name: 'TypeScript', icon: '📘', category: 'Frontend' },
-    { name: 'MongoDB', icon: '🍃', category: 'Database' },
-    { name: 'AWS', icon: '☁', category: 'Cloud' },
-    { name: 'Docker', icon: '🐳', category: 'DevOps' },
-    { name: 'React Native', icon: '📱', category: 'Mobile' },
-    { name: 'GraphQL', icon: '📊', category: 'API' },
-    { name: 'Firebase', icon: '🔥', category: 'Backend' },
-    { name: 'Figma', icon: '🎨', category: 'Design' },
-    { name: 'TensorFlow', icon: '🤖', category: 'AI/ML' }
-  ];
-
-  // Service Detail Modal Component
-  const ServiceModal = ({ service, isOpen, onClose }) => {
-    if (!isOpen || !service) return null;
-
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-        <div 
-          className="relative bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          <div className={`p-8 bg-gradient-to-r ${service.color} rounded-t-3xl text-white`}>
-            <div className="flex justify-between items-start">
-              <div className="flex items-center space-x-4">
-                <div className="text-6xl">{service.icon}</div>
-                <div>
-                  <h2 className="text-3xl md:text-4xl font-bold">{service.title}</h2>
-                  <p className="text-white/90 text-lg mt-2">{service.description}</p>
-                </div>
-              </div>
-              <button
-                onClick={onClose}
-                className="text-white hover:text-white/80 text-2xl p-2 transition-colors duration-300 hover:bg-white/10 rounded-full"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="p-6 md:p-8 text-gray-800">
-            {/* Detailed Description */}
-            <div className="mb-8">
-              <h3 className="text-2xl font-bold mb-4 text-gray-900">Overview</h3>
-              <p className="text-gray-700 text-lg leading-relaxed">{service.detailedDescription}</p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Features */}
-              <div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900">Key Features</h3>
-                <div className="space-y-3">
-                  {service.features.map((feature, index) => (
-                    <div key={index} className="flex items-center text-gray-700">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mr-3 flex-shrink-0"></div>
-                      <span className="text-lg">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Benefits */}
-              <div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900">Benefits</h3>
-                <div className="space-y-3">
-                  {service.benefits.map((benefit, index) => (
-                    <div key={index} className="flex items-center text-gray-700">
-                      <div className="w-2 h-2 bg-indigo-600 rounded-full mr-3 flex-shrink-0"></div>
-                      <span className="text-lg">{benefit}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Process */}
-            <div className="mt-8">
-              <h3 className="text-2xl font-bold mb-4 text-gray-900">Our Process</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                {service.process.map((step, index) => (
-                  <div key={index} className="text-center">
-                    <div className="bg-gray-50 rounded-lg p-4 mb-2 border border-gray-200">
-                      <div className="text-2xl mb-2 text-blue-600 font-bold">{index + 1}</div>
-                      <div className="text-sm text-gray-600">{step}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Pricing & Timeline */}
-            <div className="grid md:grid-cols-2 gap-8 mt-8">
-              <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                <h3 className="text-xl font-bold mb-3 text-gray-900">Timeline</h3>
-                <p className="text-3xl text-blue-600 font-bold">{service.timeline}</p>
-              </div>
-              <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                <h3 className="text-xl font-bold mb-3 text-gray-900">Investment</h3>
-                <p className="text-3xl text-indigo-600 font-bold">{service.price}</p>
-              </div>
-            </div>
-
-            {/* CTA */}
-            <div className="mt-8 text-center">
-              <button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-500 transform hover:scale-105 shadow-lg">
-                Start Your Project
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900 overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-100/30 rounded-full blur-3xl"></div>
-        <div className="absolute top-40 right-20 w-96 h-96 bg-indigo-100/30 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-blue-50/40 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-40 right-1/3 w-64 h-64 bg-indigo-50/30 rounded-full blur-3xl"></div>
-      </div>
+    <>
+      {/* Navbar */}
+      <nav className={`text-slate-700 py-4 px-6 fixed top-0 left-0 w-full transition-all duration-500 z-50 ${
+        isScrolled 
+          ? 'bg-white/95 backdrop-blur-lg shadow-lg shadow-blue-600/5 border-b border-blue-200/30' 
+          : 'bg-white/90 backdrop-blur-sm'
+      } ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
 
-      {/* Hero Section with Side-by-Side Layout */}
-      <div className={`container mx-auto px-4 py-16 lg:py-24 relative z-10 transition-all duration-1000 ${
-        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}>
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Column - Text Content */}
-            <div className="space-y-8">
-              <div className={`inline-block mb-4 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-blue-200 shadow-sm transition-all duration-1000 delay-200 ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}>
-                <span className="text-blue-700 font-semibold">🚀 Professional Digital Solutions</span>
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          {/* Logo */}
+          <div className={`flex items-center space-x-3 transition-all duration-700 ${
+            isLoaded ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'
+          }`}>
+            <button onClick={() => handleLinkClick('home')} className="flex items-center space-x-3 hover:opacity-80 transition-all duration-300 group">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-blue-600/25">
+                <span className="text-white font-bold text-sm transition-all duration-300 group-hover:scale-110">TS</span>
               </div>
-              
-              <h1 className={`text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight transition-all duration-1000 delay-300 ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}>
-                Transform Your
-                <span className="block bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
-                  Business Digital
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold text-gray-900 leading-none">
+                  Team <span className="bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">TSIL</span>
                 </span>
-              </h1>
-              
-              <p className={`text-xl text-gray-600 mb-8 leading-relaxed transition-all duration-1000 delay-500 ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}>
-                We deliver <span className="text-blue-600 font-semibold">enterprise-grade digital solutions</span> that drive growth, 
-                enhance efficiency, and transform businesses through innovative technology and strategic expertise.
-              </p>
-              
-              <div className={`flex flex-col sm:flex-row gap-6 transition-all duration-1000 delay-700 ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}>
-                <button className="group bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-500 transform hover:scale-105 hover:shadow-xl flex items-center space-x-3 shadow-lg">
-                  <span>Explore Our Services</span>
-                  <span className="group-hover:translate-x-2 transition-transform duration-300">→</span>
-                </button>
-                <button className="group border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-500 transform hover:scale-105 flex items-center space-x-3 bg-white/70 backdrop-blur-sm">
-                  <span>View Case Studies</span>
-                  <span className="group-hover:translate-x-2 transition-transform duration-300">📊</span>
-                </button>
+                <span className="text-xs text-gray-500 font-medium">Digital Solutions</span>
               </div>
-            </div>
+            </button>
+          </div>
 
-            {/* Right Column - Video/Visual Content */}
-            <div className={`relative transition-all duration-1000 delay-500 ${
-              isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}>
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/50 backdrop-blur-sm">
-                {/* Video Placeholder with Professional Animation */}
-                <div className="aspect-video bg-gradient-to-br from-white/90 to-gray-50/90 backdrop-blur-sm flex items-center justify-center relative overflow-hidden">
-                  {/* Animated background elements */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-indigo-700/5"></div>
-                  
-                  {/* Floating elements */}
-                  <div className="absolute top-4 left-4 w-16 h-16 bg-blue-600/10 rounded-lg animate-float backdrop-blur-sm"></div>
-                  <div className="absolute top-12 right-8 w-12 h-12 bg-indigo-600/10 rounded-lg animate-float delay-1000 backdrop-blur-sm"></div>
-                  <div className="absolute bottom-8 left-12 w-10 h-10 bg-blue-500/10 rounded-lg animate-float delay-2000 backdrop-blur-sm"></div>
-                  <div className="absolute bottom-16 right-4 w-14 h-14 bg-indigo-500/10 rounded-lg animate-float delay-1500 backdrop-blur-sm"></div>
-                  
-                  {/* Central play button and text */}
-                  <div className="relative z-10 text-center p-8">
-                    <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl hover:scale-110 transition-transform duration-300 cursor-pointer">
-                      <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-800 mb-2">Our Success Story</h3>
-                    <p className="text-gray-600">Discover how we transform businesses through innovation</p>
-                  </div>
-                </div>
-                
-                {/* Decorative elements */}
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-blue-100/40 rounded-full backdrop-blur-sm"></div>
-                <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-indigo-100/40 rounded-full backdrop-blur-sm"></div>
+          {/* Desktop Navigation Links */}
+          <div className={`hidden md:flex items-center space-x-8 transition-all duration-700 delay-200 ${
+            isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-5 opacity-0'
+          }`}>
+            {navLinks.map((link, index) => (
+              <button
+                key={link.id}
+                onClick={() => handleLinkClick(link.id)}
+                className={`relative font-semibold text-lg transition-all duration-300 group ${
+                  activeLink === link.id 
+                    ? 'text-blue-600' 
+                    : 'text-gray-700 hover:text-blue-600'
+                }`}
+                style={{ 
+                  transitionDelay: `${300 + index * 100}ms`,
+                }}
+              >
+                <span className="relative z-10">{link.label}</span>
+                <div className={`absolute inset-x-0 -bottom-1 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-700 transition-all duration-300 origin-center ${
+                  activeLink === link.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></div>
+              </button>
+            ))}
+          </div>
+
+          {/* Desktop CTA Button */}
+          <div className={`hidden md:flex items-center space-x-4 transition-all duration-700 delay-500 ${
+            isLoaded ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
+          }`}>
+            <button className="text-gray-600 hover:text-blue-600 transition-all duration-300 font-medium">
+              Login
+            </button>
+            <button className="relative bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 font-semibold overflow-hidden group shadow-lg hover:shadow-xl">
+              <span className="relative z-10">Get Started</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+            </button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className={`md:hidden transition-all duration-700 delay-400 ${
+            isLoaded ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
+          }`}>
+            <button 
+              onClick={toggleMobileMenu}
+              className="text-gray-700 hover:text-blue-600 transition-all duration-300 p-2 rounded-lg hover:bg-blue-50 group"
+              aria-label="Toggle mobile menu"
+            >
+              <div className="relative w-6 h-6">
+                {isMobileMenuOpen ? (
+                  <svg className="w-6 h-6 transform rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
               </div>
-            </div>
+            </button>
           </div>
         </div>
-      </div>
 
-      {/* Stats Section */}
-      <div 
-        id="stats" 
-        className={`container mx-auto px-4 py-16 animate-section transition-all duration-1000 ${
-          isVisible.stats ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {[
-            { number: '50+', label: 'Projects Completed', icon: '🚀', delay: '0ms', color: 'blue' },
-            { number: '35+', label: 'Happy Clients', icon: '🏢', delay: '200ms', color: 'indigo' },
-            { number: '75+', label: 'Team Experts', icon: '👥', delay: '400ms', color: 'blue' },
-            { number: '3+', label: 'Years Excellence', icon: '⭐', delay: '600ms', color: 'indigo' }
-          ].map((stat, index) => (
-            <div 
-              key={index}
-              className="group text-center bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 hover:border-blue-300 transition-all duration-500 hover:transform hover:scale-105 hover:shadow-xl shadow-lg"
-              style={{ 
-                transitionDelay: isVisible.stats ? stat.delay : '0ms',
-              }}
-            >
-              <div className="text-3xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                {stat.icon}
-              </div>
-              <div className={`text-3xl font-bold text-${stat.color}-600 mb-2`}>{stat.number}</div>
-              <div className="text-gray-600 group-hover:text-gray-800 transition-colors duration-300">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Services Section */}
-      <div 
-        id="services" 
-        className={`container mx-auto px-4 py-20 animate-section transition-all duration-1000 ${
-          isVisible.services ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-            Our Services
-          </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto px-4">
-            Comprehensive digital solutions designed to drive your business forward
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {services.map((service, index) => (
-            <div
-              key={service.id}
-              className={`group bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 hover:border-blue-300 transition-all duration-500 hover:transform hover:scale-105 hover:shadow-xl shadow-lg ${
-                isVisible.services ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}
-              style={{ transitionDelay: isVisible.services ? `${index * 200}ms` : '0ms' }}
-            >
-              <div className={`text-4xl mb-4 p-3 rounded-xl bg-gradient-to-r ${service.color} text-white w-fit group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                {service.icon}
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-300">
-                {service.title}
-              </h3>
-              <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-                {service.description}
-              </p>
-              <div className="space-y-2 mb-4">
-                {service.features.slice(0, 3).map((feature, idx) => (
-                  <div key={idx} className="flex items-center text-gray-600 text-sm group-hover:text-gray-800 transition-colors duration-300">
-                    <div className="w-2 h-2 bg-blue-600 rounded-full mr-3 flex-shrink-0"></div>
-                    <span className="truncate">{feature}</span>
-                  </div>
-                ))}
-              </div>
+        {/* Mobile Menu */}
+        <div className={`md:hidden transition-all duration-500 ease-in-out overflow-hidden ${
+          isMobileMenuOpen 
+            ? 'max-h-96 opacity-100 translate-y-0' 
+            : 'max-h-0 opacity-0 -translate-y-5'
+        }`}>
+          <div className="px-2 pt-4 pb-3 space-y-1 bg-white/95 backdrop-blur-lg mt-4 rounded-xl border border-blue-200/30 shadow-lg shadow-blue-600/5">
+            {navLinks.map((link, index) => (
               <button
-                onClick={() => openModal(service)}
-                className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors duration-300 group-hover:translate-x-2 w-full justify-start"
+                key={link.id}
+                onClick={() => handleLinkClick(link.id)}
+                className={`w-full text-left block px-4 py-3 text-base font-semibold rounded-lg transition-all duration-300 ${
+                  activeLink === link.id 
+                    ? 'text-blue-600 bg-blue-50 border-l-4 border-blue-600' 
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                }`}
               >
-                Learn More →
+                {link.label}
+              </button>
+            ))}
+            
+            {/* Mobile CTA Buttons */}
+            <div className="px-3 py-3 space-y-3 border-t border-gray-200 mt-4 pt-4">
+              <button className="w-full text-gray-600 hover:text-blue-600 px-4 py-2 text-center font-medium transition-all duration-300">
+                Login
+              </button>
+              <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 font-semibold relative overflow-hidden group shadow-lg">
+                <span className="relative z-10">Get Started</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
               </button>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Featured Services Carousel */}
-      <div 
-        id="featured-services" 
-        className={`container mx-auto px-4 py-20 animate-section transition-all duration-1000 ${
-          isVisible['featured-services'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-            Featured Services
-          </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover our core services that drive digital transformation and business growth
-          </p>
+          </div>
         </div>
 
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-gray-200 shadow-xl">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div>
-                <div className={`text-6xl mb-6 transition-all duration-1000 ${
-                  isVisible['featured-services'] ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
-                }`}>
-                  {services[activeService].icon}
-                </div>
-                <h3 className="text-3xl font-bold mb-4 text-gray-900">{services[activeService].title}</h3>
-                <p className="text-gray-600 text-lg mb-6">{services[activeService].description}</p>
-                <div className="flex space-x-4">
-                  {services.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setActiveService(index)}
-                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                        index === activeService ? 'bg-blue-600 scale-125' : 'bg-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                {services[activeService].features.map((feature, index) => (
-                  <div 
-                    key={index}
-                    className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200 hover:border-blue-300 transition-all duration-300 hover:scale-105"
-                  >
-                    <div className="text-blue-600 text-lg mb-2">✓</div>
-                    <div className="text-gray-900 font-medium">{feature}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
+        {/* Mobile Menu Backdrop */}
+        <div 
+          className={`md:hidden fixed inset-0 bg-black transition-all duration-500 -z-10 ${
+            isMobileMenuOpen ? 'bg-opacity-30 backdrop-blur-sm' : 'bg-opacity-0 pointer-events-none'
+          }`}
+          onClick={closeMobileMenu}
+        ></div>
+      </nav>
+
+      {/* Professional Banner */}
+      <div className="fixed top-[72px] w-full z-40 bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-2.5 shadow-md">
+        <div className="animate-marquee whitespace-nowrap overflow-hidden">
+          <div className="inline-block animate-scroll">
+            <span className="text-sm font-medium inline-block px-8">
+              🏢 Professional Digital Solutions That Drive Business Growth
+            </span>
+            <span className="text-sm font-medium inline-block px-8">
+              ⚡ Transform Your Operations with Expert Technology Consulting
+            </span>
+            <span className="text-sm font-medium inline-block px-8">
+              🌟 Trusted by 50+ Enterprise Clients Worldwide
+            </span>
+            <span className="text-sm font-medium inline-block px-8">
+              📅 Schedule Your Strategic Consultation Today
+            </span>
+            <span className="text-sm font-medium inline-block px-8">
+              🚀 Innovative Solutions for Digital Transformation
+            </span>
+            <span className="text-sm font-medium inline-block px-8">
+              💼 Enterprise-Grade Security and Scalability
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Technology Stack */}
-      <div 
-        id="technologies" 
-        className={`container mx-auto px-4 py-20 animate-section transition-all duration-1000 ${
-          isVisible.technologies ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-            Technology Stack
-          </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            We leverage cutting-edge technologies to build robust and scalable solutions
-          </p>
-        </div>
+      {/* Spacer to prevent content from being hidden behind fixed navbar */}
+      <div className="h-28"></div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
-          {technologies.map((tech, index) => (
-            <div 
-              key={index}
-              className={`group bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200 hover:border-blue-300 transition-all duration-500 hover:transform hover:scale-110 hover:shadow-lg text-center ${
-                isVisible.technologies ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}
-              style={{ transitionDelay: isVisible.technologies ? `${index * 100}ms` : '0ms' }}
-            >
-              <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">{tech.icon}</div>
-              <div className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">{tech.name}</div>
-              <div className="text-sm text-gray-500 mt-1">{tech.category}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Projects Section */}
-      <div 
-        id="projects" 
-        className={`container mx-auto px-4 py-20 animate-section transition-all duration-1000 ${
-          isVisible.projects ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-            Success Stories
-          </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Explore our portfolio of innovative projects that deliver real results
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-          {projects.map((project, index) => (
-            <div
-              key={index}
-              className={`group relative bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-300 transition-all duration-500 hover:transform hover:scale-105 hover:shadow-xl shadow-lg ${
-                isVisible.projects ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}
-              style={{ transitionDelay: isVisible.projects ? `${index * 100}ms` : '0ms' }}
-            >
-              <div className="h-48 bg-gradient-to-br from-white/90 to-gray-50/90 backdrop-blur-sm flex items-center justify-center group-hover:from-blue-50 group-hover:to-indigo-50 transition-all duration-500 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                <div className="text-5xl z-10 group-hover:scale-110 transition-transform duration-500">
-                  {project.image}
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold text-lg group-hover:text-blue-600 transition-colors duration-300">
-                    {project.title}
-                  </h3>
-                  <span className="text-blue-600 text-xs bg-blue-50 px-2 py-1 rounded-full">
-                    {project.category}
-                  </span>
-                </div>
-                <p className="text-gray-600 text-sm group-hover:text-gray-700 transition-colors duration-300">
-                  {project.description}
-                </p>
-                <div className="mt-4 flex items-center text-blue-600 group-hover:text-blue-700 transition-colors duration-300">
-                  <span className="text-sm font-semibold">View Project</span>
-                  <span className="ml-2 group-hover:translate-x-1 transition-transform duration-300">→</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Testimonials Section */}
-      <div 
-        id="testimonials" 
-        className={`container mx-auto px-4 py-20 animate-section transition-all duration-1000 ${
-          isVisible.testimonials ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-            Client Testimonials
-          </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Hear what our clients say about working with us
-          </p>
-        </div>
-
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-gray-200 shadow-xl">
-            <div className="text-center mb-8">
-              <div className="text-5xl mb-4">{testimonials[currentTestimonial].avatar}</div>
-              <div className="flex justify-center space-x-1 mb-4">
-                {Array.from({ length: testimonials[currentTestimonial].rating }).map((_, i) => (
-                  <span key={i} className="text-amber-400">⭐</span>
-                ))}
-              </div>
-              <p className="text-xl italic text-gray-700 mb-4">
-                "{testimonials[currentTestimonial].content}"
-              </p>
-              <div>
-                <div className="font-bold text-gray-900 text-lg">{testimonials[currentTestimonial].name}</div>
-                <div className="text-blue-600">{testimonials[currentTestimonial].role}</div>
-              </div>
-            </div>
-            <div className="flex justify-center space-x-2">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTestimonial(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentTestimonial ? 'bg-blue-600 scale-125' : 'bg-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div 
-        id="cta" 
-        className={`container mx-auto px-4 py-20 animate-section transition-all duration-1000 ${
-          isVisible.cta ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-        }`}
-      >
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 rounded-3xl p-12 text-white shadow-2xl relative overflow-hidden">
-            {/* Background decoration */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-blue-700/20"></div>
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
-            
-            <div className="relative z-10">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                Ready to Transform Your Business?
-              </h2>
-              <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                Let's discuss how we can transform your ideas into exceptional digital experiences that drive real business results
-              </p>
-              <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <button className="bg-white text-blue-600 hover:bg-gray-50 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-500 transform hover:scale-110 shadow-lg">
-                  Get Free Consultation
-                </button>
-                <button className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-500 transform hover:scale-110 backdrop-blur-sm">
-                  View Our Portfolio
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Service Detail Modal */}
-      <ServiceModal 
-        service={selectedService} 
-        isOpen={isModalOpen} 
-        onClose={closeModal} 
-      />
-
-      {/* Add CSS for floating animation */}
+      {/* Custom CSS for marquee animation */}
       <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
+        .animate-scroll {
+          animation: scroll 30s linear infinite;
         }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
+        
+        @keyframes scroll {
+          0% {
+            transform: translateX(100%);
+          }
+          100% {
+            transform: translateX(-100%);
+          }
+        }
+        
+        .animate-marquee {
+          mask: linear-gradient(90deg, transparent, white 10%, white 90%, transparent);
+          -webkit-mask: linear-gradient(90deg, transparent, white 10%, white 90%, transparent);
         }
       `}</style>
-    </div>
+    </>
   );
-}
+};
+
+export default Navbar;
